@@ -33,13 +33,12 @@
     font-size: clamp(44px, 10vw, 68px); line-height: 0.95;
     letter-spacing: -0.02em; margin: 0 0 16px; }
   h1 em { font-style: italic; font-weight: 400; color: var(--terracotta); }
-  .lede { font-size: 15px; line-height: 1.55; color: var(--ink-soft);
-    max-width: 380px; margin: 0 auto; }
+  .lede { font-size: 15px; line-height: 1.55; color: var(--ink-soft); max-width: 380px; margin: 0 auto; }
   .card { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
     padding: 28px 24px; box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 20px 40px -20px rgba(26,26,46,0.1); }
   fieldset { border: none; padding: 0; margin: 0 0 22px; }
   fieldset:last-of-type { margin-bottom: 0; }
-  label.field { display: block; margin-bottom: 22px; }
+  .field { display: block; margin-bottom: 22px; }
   .label-text { display: block; font-size: 12px; letter-spacing: 0.12em;
     text-transform: uppercase; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
   input[type="text"], input[type="tel"], textarea {
@@ -50,6 +49,10 @@
   }
   input:focus, textarea:focus { outline: none; border-bottom-color: var(--terracotta); }
   textarea { resize: vertical; min-height: 60px; font-family: inherit; }
+  .field.invalid input, .field.invalid textarea { border-bottom-color: var(--terracotta); }
+  .field-error { display: none; font-size: 12px; color: var(--terracotta-deep);
+    margin-top: 6px; font-weight: 500; }
+  .field.invalid .field-error { display: block; }
   legend.label-text { margin-bottom: 12px; padding: 0; }
   .radio-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
   .radio-row label { position: relative; text-align: center; padding: 12px 8px;
@@ -68,6 +71,7 @@
   .file-preview { display: none; margin-top: 12px; }
   .file-preview img { max-width: 120px; max-height: 120px;
     border-radius: 2px; border: 1px solid var(--rule); }
+  .file-meta { display: block; font-size: 11px; color: var(--ink-soft); margin-top: 6px; }
   button { width: 100%; background: var(--ink); color: var(--cream); border: none;
     padding: 16px; font-family: inherit; font-size: 13px; font-weight: 600;
     letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer;
@@ -75,11 +79,13 @@
   button:hover:not(:disabled) { background: var(--terracotta-deep); }
   button:disabled { opacity: 0.6; cursor: not-allowed; }
   .status { margin-top: 16px; padding: 12px; border-radius: 2px;
-    font-size: 14px; text-align: center; display: none; }
+    font-size: 14px; text-align: left; display: none; line-height: 1.45; }
   .status.show { display: block; }
-  .status.success { background: rgba(94,107,58,0.12); color: var(--olive); }
+  .status.success { background: rgba(94,107,58,0.12); color: var(--olive); text-align: center; }
   .status.error { background: rgba(196,69,54,0.1); color: var(--terracotta-deep); }
-  .status.loading { background: rgba(26,26,46,0.05); color: var(--ink-soft); }
+  .status.loading { background: rgba(26,26,46,0.05); color: var(--ink-soft); text-align: center; }
+  .status pre { margin: 8px 0 0; padding: 8px; background: rgba(0,0,0,0.05);
+    font-size: 11px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
   .footer { text-align: center; margin-top: 32px; font-size: 13px; color: var(--ink-soft); }
   .footer a { color: var(--terracotta); text-decoration: none; border-bottom: 1px solid currentColor; }
 </style>
@@ -93,41 +99,48 @@
     </header>
     <main class="card">
       <form id="surveyForm" novalidate>
-        <label class="field">
-          <span class="label-text">Your name</span>
-          <input type="text" name="name" required autocomplete="name">
-        </label>
-        <label class="field">
-          <span class="label-text">Phone</span>
-          <input type="tel" name="phone" required autocomplete="tel" inputmode="tel">
-        </label>
-        <label class="field">
-          <span class="label-text">City</span>
-          <input type="text" name="city" required autocomplete="address-level2">
-        </label>
-        <label class="field">
-          <span class="label-text">Address</span>
-          <textarea name="address" required rows="2" autocomplete="street-address"></textarea>
-        </label>
-        <fieldset>
+        <div class="field" data-field="name">
+          <label class="label-text" for="f_name">Your name</label>
+          <input type="text" id="f_name" name="name" autocomplete="name">
+          <span class="field-error">Please enter your name (at least 2 characters).</span>
+        </div>
+        <div class="field" data-field="phone">
+          <label class="label-text" for="f_phone">Phone</label>
+          <input type="tel" id="f_phone" name="phone" autocomplete="tel" inputmode="tel">
+          <span class="field-error">Please enter a valid phone number (7+ digits).</span>
+        </div>
+        <div class="field" data-field="city">
+          <label class="label-text" for="f_city">City</label>
+          <input type="text" id="f_city" name="city" autocomplete="address-level2">
+          <span class="field-error">Please enter your city.</span>
+        </div>
+        <div class="field" data-field="address">
+          <label class="label-text" for="f_address">Address</label>
+          <textarea id="f_address" name="address" rows="2" autocomplete="street-address"></textarea>
+          <span class="field-error">Please enter your address (at least 5 characters).</span>
+        </div>
+        <fieldset class="field" data-field="willingness">
           <legend class="label-text">Will you join?</legend>
           <div class="radio-row">
-            <label><input type="radio" name="willingness" value="Yes" required>Yes</label>
+            <label><input type="radio" name="willingness" value="Yes">Yes</label>
             <label><input type="radio" name="willingness" value="Maybe">Maybe</label>
             <label><input type="radio" name="willingness" value="No">No</label>
           </div>
+          <span class="field-error">Please pick one.</span>
         </fieldset>
-        <fieldset>
+        <fieldset class="field" data-field="photo">
           <legend class="label-text">Photo of you</legend>
           <div class="file-upload" id="fileBox">
-            <input type="file" name="photo" id="photoInput" accept="image/*" required>
+            <input type="file" name="photo" id="photoInput" accept="image/*">
             <div class="file-upload-text" id="fileText">
               <strong>Choose a photo</strong> or take one now
             </div>
             <div class="file-preview" id="filePreview">
               <img id="previewImg" alt="">
+              <span class="file-meta" id="fileMeta"></span>
             </div>
           </div>
+          <span class="field-error">Please attach a photo.</span>
         </fieldset>
         <button type="submit" id="submitBtn">Send my details</button>
         <div id="status" class="status"></div>
@@ -146,22 +159,179 @@
   // ============================================
 
   document.getElementById('resultsLink').href = SHEET_VIEW_URL;
+
   const form = document.getElementById('surveyForm');
-  const status = document.getElementById('status');
+  const statusEl = document.getElementById('status');
   const submitBtn = document.getElementById('submitBtn');
   const photoInput = document.getElementById('photoInput');
   const fileText = document.getElementById('fileText');
   const filePreview = document.getElementById('filePreview');
   const previewImg = document.getElementById('previewImg');
+  const fileMeta = document.getElementById('fileMeta');
 
-  function setStatus(msg, type) {
-    status.textContent = msg;
-    status.className = 'status show ' + type;
+  let compressedPhoto = null; // { base64, mimeType, name, sizeKB }
+
+  function setStatus(html, type) {
+    statusEl.innerHTML = html;
+    statusEl.className = 'status show ' + type;
   }
 
-  photoInput.addEventListener('change', (e) => {
+  function markInvalid(fieldName, invalid) {
+    const el = document.querySelector(`[data-field="${fieldName}"]`);
+    if (el) el.classList.toggle('invalid', invalid);
+  }
+
+  function validate() {
+    const fd = new FormData(form);
+    const errors = [];
+    const name = (fd.get('name') || '').trim();
+    const phone = (fd.get('phone') || '').trim();
+    const city = (fd.get('city') || '').trim();
+    const address = (fd.get('address') || '').trim();
+    const willingness = fd.get('willingness');
+
+    markInvalid('name', name.length < 2);
+    if (name.length < 2) errors.push('name');
+    const digits = phone.replace(/\D/g, '');
+    markInvalid('phone', digits.length < 7);
+    if (digits.length < 7) errors.push('phone');
+    markInvalid('city', city.length < 2);
+    if (city.length < 2) errors.push('city');
+    markInvalid('address', address.length < 5);
+    if (address.length < 5) errors.push('address');
+    markInvalid('willingness', !willingness);
+    if (!willingness) errors.push('willingness');
+    markInvalid('photo', !compressedPhoto);
+    if (!compressedPhoto) errors.push('photo');
+
+    return { ok: errors.length === 0, errors,
+      data: { name, phone, city, address, willingness } };
+  }
+
+  // Compress image client-side: max 800px on longest edge, JPEG q=0.82
+  function compressImage(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = 800;
+          let { width, height } = img;
+          if (width > height && width > maxDim) {
+            height = Math.round(height * (maxDim / width));
+            width = maxDim;
+          } else if (height > maxDim) {
+            width = Math.round(width * (maxDim / height));
+            height = maxDim;
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width; canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+          const base64 = dataUrl.split(',')[1];
+          const sizeKB = Math.round((base64.length * 3 / 4) / 1024);
+          resolve({
+            base64,
+            mimeType: 'image/jpeg',
+            name: file.name.replace(/\.[^.]+$/, '') + '.jpg',
+            sizeKB,
+            previewUrl: dataUrl
+          });
+        };
+        img.onerror = () => reject(new Error('Could not read image'));
+        img.src = ev.target.result;
+      };
+      reader.onerror = () => reject(new Error('Could not read file'));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  photoInput.addEventListener('change', async (e) => {
     const f = e.target.files[0];
     if (!f) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      previewImg.src = ev.ta
+    if (!f.type.startsWith('image/')) {
+      markInvalid('photo', true);
+      return;
+    }
+    try {
+      compressedPhoto = await compressImage(f);
+      previewImg.src = compressedPhoto.previewUrl;
+      fileMeta.textContent = `${compressedPhoto.sizeKB} KB · compressed`;
+      filePreview.style.display = 'block';
+      fileText.style.display = 'none';
+      markInvalid('photo', false);
+    } catch (err) {
+      markInvalid('photo', true);
+      setStatus('Could not read that image. Try a different one.', 'error');
+    }
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const v = validate();
+    if (!v.ok) {
+      setStatus('Please fix the highlighted fields above.', 'error');
+      return;
+    }
+    submitBtn.disabled = true;
+    setStatus('Sending…', 'loading');
+
+    const payload = {
+      ...v.data,
+      photoName: compressedPhoto.name,
+      photoMimeType: compressedPhoto.mimeType,
+      photoBase64: compressedPhoto.base64
+    };
+
+    let res, rawText;
+    try {
+      res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+        redirect: 'follow'
+      });
+      rawText = await res.text();
+    } catch (err) {
+      submitBtn.disabled = false;
+      setStatus(`<strong>Network error.</strong> Could not reach the server.<pre>${escapeHtml(err.message)}</pre>`, 'error');
+      return;
+    }
+
+    let json;
+    try { json = JSON.parse(rawText); }
+    catch (_) {
+      submitBtn.disabled = false;
+      const looksLikeAuth = /sign in|authoriz|accounts\.google/i.test(rawText);
+      const hint = looksLikeAuth
+        ? 'Looks like an auth page. In Apps Script → Manage deployments → set <em>Who has access</em> to <strong>Anyone</strong>, then redeploy as a new version.'
+        : 'Server returned non-JSON. Check Apps Script → Executions for errors.';
+      setStatus(
+        `<strong>Server returned status ${res.status}.</strong> ${hint}<pre>${escapeHtml(rawText.slice(0, 400))}</pre>`,
+        'error'
+      );
+      return;
+    }
+
+    submitBtn.disabled = false;
+    if (json.ok) {
+      setStatus('✓ Got it. See you there!', 'success');
+      form.reset();
+      compressedPhoto = null;
+      filePreview.style.display = 'none';
+      fileText.style.display = 'block';
+      document.querySelectorAll('.field.invalid').forEach(el => el.classList.remove('invalid'));
+    } else {
+      setStatus(`<strong>Submission rejected.</strong><pre>${escapeHtml(json.error || 'Unknown error')}</pre>`, 'error');
+    }
+  });
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+</script>
+</body>
+</html>
