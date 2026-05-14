@@ -10,12 +10,13 @@
 <style>
   :root {
     --cream: #f4ede3; --paper: #fbf7f1; --ink: #1a1a2e; --ink-soft: #4a4a5e;
-    --rule: #d9cdb8; --terracotta: #c44536; --terracotta-deep: #9d3324; --olive: #5e6b3a;
+    --rule: #d9cdb8; --terracotta: #c44536; --terracotta-deep: #9d3324;
+    --olive: #5e6b3a; --amber: #c89263;
   }
   * { box-sizing: border-box; }
   html, body {
     margin: 0; padding: 0;
-    font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     color: var(--ink); background: var(--cream); -webkit-font-smoothing: antialiased;
   }
   body {
@@ -27,20 +28,51 @@
   }
   .wrapper { width: 100%; max-width: 540px; }
   .header { text-align: center; margin-bottom: 32px; }
-  .eyebrow { font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase;
-    color: var(--terracotta); font-weight: 600; margin-bottom: 14px; }
-  h1 { font-family: 'Fraunces', serif; font-weight: 500;
+  .eyebrow {
+    font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--terracotta); font-weight: 600; margin-bottom: 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif; font-weight: 500;
     font-size: clamp(44px, 10vw, 68px); line-height: 0.95;
-    letter-spacing: -0.02em; margin: 0 0 16px; }
+    letter-spacing: -0.02em; margin: 0 0 16px;
+  }
   h1 em { font-style: italic; font-weight: 400; color: var(--terracotta); }
-  .lede { font-size: 15px; line-height: 1.55; color: var(--ink-soft); max-width: 380px; margin: 0 auto; }
-  .card { background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
-    padding: 28px 24px; box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 20px 40px -20px rgba(26,26,46,0.1); }
+  .lede { font-size: 15px; line-height: 1.55; color: var(--ink-soft);
+    max-width: 380px; margin: 0 auto; }
+
+  .stats { margin-top: 24px; }
+  .stat-headline {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 400;
+    font-size: 20px; color: var(--ink); margin-bottom: 6px;
+  }
+  .stat-headline strong {
+    font-style: normal; font-weight: 500; color: var(--terracotta);
+  }
+  .stat-breakdown {
+    font-size: 12px; color: var(--ink-soft);
+    display: inline-flex; align-items: center; gap: 6px;
+    letter-spacing: 0.04em;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%;
+    display: inline-block; margin-right: 2px; }
+  .dot-yes { background: var(--olive); }
+  .dot-maybe { background: var(--amber); }
+  .dot-no { background: var(--terracotta); }
+  .sep { opacity: 0.4; margin: 0 4px; }
+
+  .card {
+    background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
+    padding: 28px 24px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 20px 40px -20px rgba(26,26,46,0.1);
+  }
   fieldset { border: none; padding: 0; margin: 0 0 22px; }
   fieldset:last-of-type { margin-bottom: 0; }
   .field { display: block; margin-bottom: 22px; }
-  .label-text { display: block; font-size: 12px; letter-spacing: 0.12em;
-    text-transform: uppercase; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+  .label-text {
+    display: block; font-size: 12px; letter-spacing: 0.12em;
+    text-transform: uppercase; font-weight: 600; color: var(--ink); margin-bottom: 8px;
+  }
   input[type="text"], input[type="tel"], textarea {
     width: 100%; border: none; border-bottom: 1.5px solid var(--rule);
     background: transparent; font-family: inherit; font-size: 16px;
@@ -50,44 +82,65 @@
   input:focus, textarea:focus { outline: none; border-bottom-color: var(--terracotta); }
   textarea { resize: vertical; min-height: 60px; font-family: inherit; }
   .field.invalid input, .field.invalid textarea { border-bottom-color: var(--terracotta); }
-  .field-error { display: none; font-size: 12px; color: var(--terracotta-deep);
-    margin-top: 6px; font-weight: 500; }
+  .field-error {
+    display: none; font-size: 12px; color: var(--terracotta-deep);
+    margin-top: 6px; font-weight: 500;
+  }
   .field.invalid .field-error { display: block; }
   legend.label-text { margin-bottom: 12px; padding: 0; }
   .radio-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .radio-row label { position: relative; text-align: center; padding: 12px 8px;
+  .radio-row label {
+    position: relative; text-align: center; padding: 12px 8px;
     border: 1.5px solid var(--rule); border-radius: 2px; cursor: pointer;
-    font-size: 14px; font-weight: 500; transition: all 0.15s; background: white; user-select: none; }
+    font-size: 14px; font-weight: 500; transition: all 0.15s;
+    background: white; user-select: none;
+  }
   .radio-row input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
-  .radio-row label:has(input:checked) { border-color: var(--terracotta);
-    background: var(--terracotta); color: white; }
-  .file-upload { border: 1.5px dashed var(--rule); border-radius: 2px;
-    padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s;
-    background: white; position: relative; }
+  .radio-row label:has(input:checked) {
+    border-color: var(--terracotta); background: var(--terracotta); color: white;
+  }
+  .file-upload {
+    border: 1.5px dashed var(--rule); border-radius: 2px;
+    padding: 24px; text-align: center; cursor: pointer;
+    transition: all 0.2s; background: white; position: relative;
+  }
   .file-upload:hover { border-color: var(--terracotta); }
-  .file-upload input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .file-upload input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer;
+  }
   .file-upload-text { font-size: 14px; color: var(--ink-soft); }
   .file-upload-text strong { color: var(--terracotta); font-weight: 600; }
   .file-preview { display: none; margin-top: 12px; }
-  .file-preview img { max-width: 120px; max-height: 120px;
-    border-radius: 2px; border: 1px solid var(--rule); }
+  .file-preview img {
+    max-width: 120px; max-height: 120px;
+    border-radius: 2px; border: 1px solid var(--rule);
+  }
   .file-meta { display: block; font-size: 11px; color: var(--ink-soft); margin-top: 6px; }
-  button { width: 100%; background: var(--ink); color: var(--cream); border: none;
+  button {
+    width: 100%; background: var(--ink); color: var(--cream); border: none;
     padding: 16px; font-family: inherit; font-size: 13px; font-weight: 600;
     letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer;
-    border-radius: 2px; transition: background 0.15s; margin-top: 8px; }
+    border-radius: 2px; transition: background 0.15s; margin-top: 8px;
+  }
   button:hover:not(:disabled) { background: var(--terracotta-deep); }
   button:disabled { opacity: 0.6; cursor: not-allowed; }
-  .status { margin-top: 16px; padding: 12px; border-radius: 2px;
-    font-size: 14px; text-align: left; display: none; line-height: 1.45; }
+  .status {
+    margin-top: 16px; padding: 12px; border-radius: 2px;
+    font-size: 14px; text-align: left; display: none; line-height: 1.45;
+  }
   .status.show { display: block; }
   .status.success { background: rgba(94,107,58,0.12); color: var(--olive); text-align: center; }
   .status.error { background: rgba(196,69,54,0.1); color: var(--terracotta-deep); }
   .status.loading { background: rgba(26,26,46,0.05); color: var(--ink-soft); text-align: center; }
-  .status pre { margin: 8px 0 0; padding: 8px; background: rgba(0,0,0,0.05);
-    font-size: 11px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+  .status pre {
+    margin: 8px 0 0; padding: 8px; background: rgba(0,0,0,0.05);
+    font-size: 11px; overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+  }
   .footer { text-align: center; margin-top: 32px; font-size: 13px; color: var(--ink-soft); }
-  .footer a { color: var(--terracotta); text-decoration: none; border-bottom: 1px solid currentColor; }
+  .footer a {
+    color: var(--terracotta); text-decoration: none;
+    border-bottom: 1px solid currentColor;
+  }
 </style>
 </head>
 <body>
@@ -96,7 +149,19 @@
       <div class="eyebrow">RSVP</div>
       <h1>Class <em>meetup</em></h1>
       <p class="lede">Let's get the gang together. Fill this in so we can plan the date, place, and count heads.</p>
+
+      <div class="stats" id="stats" hidden>
+        <div class="stat-headline"><strong id="statTotal">0</strong> classmates already in</div>
+        <div class="stat-breakdown">
+          <span class="dot dot-yes"></span><span id="statYes">0</span> coming
+          <span class="sep">·</span>
+          <span class="dot dot-maybe"></span><span id="statMaybe">0</span> maybe
+          <span class="sep">·</span>
+          <span class="dot dot-no"></span><span id="statNo">0</span> can't make it
+        </div>
+      </div>
     </header>
+
     <main class="card">
       <form id="surveyForm" novalidate>
         <div class="field" data-field="name">
@@ -146,16 +211,19 @@
         <div id="status" class="status"></div>
       </form>
     </main>
+
     <p class="footer">
       Curious who else is in? <a id="resultsLink" href="#" target="_blank" rel="noopener">See the live list →</a>
     </p>
   </div>
+
 <script>
   // ============================================
   // CONFIG — replace these two values
   // ============================================
   const ENDPOINT = 'https://script.google.com/macros/s/AKfycbzgQfGnb4U_6P8bJXROtNQt112S-0_Lfm4591cRTkp9-ma9Xk9k0O3lpUaktzw9HPzBZg/exec';
   const SHEET_VIEW_URL = 'https://docs.google.com/spreadsheets/d/1AmAfTmgC7JGQGoFT8D-6s7CrwjfFVFfXVaGvS27IS48/edit?usp=sharing';
+
   // ============================================
 
   document.getElementById('resultsLink').href = SHEET_VIEW_URL;
@@ -168,14 +236,44 @@
   const filePreview = document.getElementById('filePreview');
   const previewImg = document.getElementById('previewImg');
   const fileMeta = document.getElementById('fileMeta');
+  const statsEl = document.getElementById('stats');
 
-  let compressedPhoto = null; // { base64, mimeType, name, sizeKB }
+  let compressedPhoto = null;
 
+  // ---------- Stats ----------
+  function updateStats(s) {
+    if (!s) return;
+    document.getElementById('statTotal').textContent = s.total;
+    document.getElementById('statYes').textContent = s.yes;
+    document.getElementById('statMaybe').textContent = s.maybe;
+    document.getElementById('statNo').textContent = s.no;
+    statsEl.hidden = false;
+  }
+
+  async function loadStats() {
+    try {
+      const res = await fetch(ENDPOINT, { method: 'GET' });
+      const json = await res.json();
+      if (json.stats) updateStats(json.stats);
+    } catch (_) { /* stats are non-critical */ }
+  }
+
+  loadStats();
+  setInterval(loadStats, 60000);
+
+  // ---------- Status display ----------
   function setStatus(html, type) {
     statusEl.innerHTML = html;
     statusEl.className = 'status show ' + type;
   }
 
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  // ---------- Validation ----------
   function markInvalid(fieldName, invalid) {
     const el = document.querySelector(`[data-field="${fieldName}"]`);
     if (el) el.classList.toggle('invalid', invalid);
@@ -183,16 +281,16 @@
 
   function validate() {
     const fd = new FormData(form);
-    const errors = [];
     const name = (fd.get('name') || '').trim();
     const phone = (fd.get('phone') || '').trim();
     const city = (fd.get('city') || '').trim();
     const address = (fd.get('address') || '').trim();
     const willingness = fd.get('willingness');
+    const digits = phone.replace(/\D/g, '');
+    const errors = [];
 
     markInvalid('name', name.length < 2);
     if (name.length < 2) errors.push('name');
-    const digits = phone.replace(/\D/g, '');
     markInvalid('phone', digits.length < 7);
     if (digits.length < 7) errors.push('phone');
     markInvalid('city', city.length < 2);
@@ -204,11 +302,14 @@
     markInvalid('photo', !compressedPhoto);
     if (!compressedPhoto) errors.push('photo');
 
-    return { ok: errors.length === 0, errors,
-      data: { name, phone, city, address, willingness } };
+    return {
+      ok: errors.length === 0,
+      errors: errors,
+      data: { name, phone, city, address, willingness }
+    };
   }
 
-  // Compress image client-side: max 800px on longest edge, JPEG q=0.82
+  // ---------- Image compression ----------
   function compressImage(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -217,7 +318,7 @@
         img.onload = () => {
           const maxDim = 800;
           let { width, height } = img;
-          if (width > height && width > maxDim) {
+          if (width >= height && width > maxDim) {
             height = Math.round(height * (maxDim / width));
             width = maxDim;
           } else if (height > maxDim) {
@@ -225,21 +326,22 @@
             height = maxDim;
           }
           const canvas = document.createElement('canvas');
-          canvas.width = width; canvas.height = height;
+          canvas.width = width;
+          canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
           const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
           const base64 = dataUrl.split(',')[1];
           const sizeKB = Math.round((base64.length * 3 / 4) / 1024);
           resolve({
-            base64,
+            base64: base64,
             mimeType: 'image/jpeg',
             name: file.name.replace(/\.[^.]+$/, '') + '.jpg',
-            sizeKB,
+            sizeKB: sizeKB,
             previewUrl: dataUrl
           });
         };
-        img.onerror = () => reject(new Error('Could not read image'));
+        img.onerror = () => reject(new Error('Could not decode image'));
         img.src = ev.target.result;
       };
       reader.onerror = () => reject(new Error('Could not read file'));
@@ -252,12 +354,13 @@
     if (!f) return;
     if (!f.type.startsWith('image/')) {
       markInvalid('photo', true);
+      setStatus('That file is not an image. Please choose a photo.', 'error');
       return;
     }
     try {
       compressedPhoto = await compressImage(f);
       previewImg.src = compressedPhoto.previewUrl;
-      fileMeta.textContent = `${compressedPhoto.sizeKB} KB · compressed`;
+      fileMeta.textContent = compressedPhoto.sizeKB + ' KB · compressed';
       filePreview.style.display = 'block';
       fileText.style.display = 'none';
       markInvalid('photo', false);
@@ -267,6 +370,7 @@
     }
   });
 
+  // ---------- Submit ----------
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const v = validate();
@@ -278,7 +382,11 @@
     setStatus('Sending…', 'loading');
 
     const payload = {
-      ...v.data,
+      name: v.data.name,
+      phone: v.data.phone,
+      city: v.data.city,
+      address: v.data.address,
+      willingness: v.data.willingness,
       photoName: compressedPhoto.name,
       photoMimeType: compressedPhoto.mimeType,
       photoBase64: compressedPhoto.base64
@@ -295,20 +403,26 @@
       rawText = await res.text();
     } catch (err) {
       submitBtn.disabled = false;
-      setStatus(`<strong>Network error.</strong> Could not reach the server.<pre>${escapeHtml(err.message)}</pre>`, 'error');
+      setStatus(
+        '<strong>Network error.</strong> Could not reach the server.' +
+        '<pre>' + escapeHtml(err.message) + '</pre>',
+        'error'
+      );
       return;
     }
 
     let json;
-    try { json = JSON.parse(rawText); }
-    catch (_) {
+    try {
+      json = JSON.parse(rawText);
+    } catch (_) {
       submitBtn.disabled = false;
       const looksLikeAuth = /sign in|authoriz|accounts\.google/i.test(rawText);
       const hint = looksLikeAuth
-        ? 'Looks like an auth page. In Apps Script → Manage deployments → set <em>Who has access</em> to <strong>Anyone</strong>, then redeploy as a new version.'
+        ? 'Looks like a Google auth page. In Apps Script → Manage deployments → set <em>Who has access</em> to <strong>Anyone</strong>, then redeploy as a new version.'
         : 'Server returned non-JSON. Check Apps Script → Executions for errors.';
       setStatus(
-        `<strong>Server returned status ${res.status}.</strong> ${hint}<pre>${escapeHtml(rawText.slice(0, 400))}</pre>`,
+        '<strong>Server returned status ' + res.status + '.</strong> ' + hint +
+        '<pre>' + escapeHtml(rawText.slice(0, 400)) + '</pre>',
         'error'
       );
       return;
@@ -316,22 +430,22 @@
 
     submitBtn.disabled = false;
     if (json.ok) {
+      if (json.stats) updateStats(json.stats);
       setStatus('✓ Got it. See you there!', 'success');
       form.reset();
       compressedPhoto = null;
       filePreview.style.display = 'none';
       fileText.style.display = 'block';
+      fileMeta.textContent = '';
       document.querySelectorAll('.field.invalid').forEach(el => el.classList.remove('invalid'));
     } else {
-      setStatus(`<strong>Submission rejected.</strong><pre>${escapeHtml(json.error || 'Unknown error')}</pre>`, 'error');
+      setStatus(
+        '<strong>Submission rejected.</strong>' +
+        '<pre>' + escapeHtml(json.error || 'Unknown error') + '</pre>',
+        'error'
+      );
     }
   });
-
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-    }[c]));
-  }
 </script>
 </body>
 </html>
